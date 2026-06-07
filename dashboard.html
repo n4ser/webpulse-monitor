@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Dashboard v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   RESET & CSS VARIABLES
+════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg:           #080b10;
+  --surface:      #0f1318;
+  --surface2:     #161b24;
+  --surface3:     #1c2230;
+  --border:       #1e2535;
+  --border2:      #28324a;
+  --text:         #dde4f0;
+  --text2:        #a0aec0;
+  --muted:        #4a5568;
+
+  --ok:           #10d9a0;
+  --ok-dim:       rgba(16,217,160,.13);
+  --down:         #ff3d5c;
+  --down-dim:     rgba(255,61,92,.13);
+  --slow:         #f6a623;
+  --slow-dim:     rgba(246,166,35,.13);
+  --blocked:      #b084f8;
+  --blocked-dim:  rgba(176,132,248,.13);
+  --redirect:     #38bdf8;
+  --redirect-dim: rgba(56,189,248,.13);
+  --content:      #ff7a45;
+  --content-dim:  rgba(255,122,69,.13);
+  --serp:         #e879f9;
+  --serp-dim:     rgba(232,121,249,.13);
+
+  --accent:       #4f8ef7;
+  --accent2:      #3b7de8;
+  --accent-dim:   rgba(79,142,247,.15);
+  --danger:       #ff3d5c;
+  --warn:         #f6a623;
+
+  --radius:       8px;
+  --radius-lg:    12px;
+  --shadow:       0 4px 24px rgba(0,0,0,.4);
+
+  /* Font stacks — Vazirmatn handles Persian, JetBrains Mono handles Latin/code */
+  --font-ui:      'Vazirmatn', 'JetBrains Mono', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Vazirmatn', monospace;
+  --font-display: 'Syne', 'Vazirmatn', sans-serif;
+}
+
+/* ── LTR mode override (toggled via JS) ─────────────────── */
+html.ltr { direction: ltr; }
+html.ltr body { font-family: 'JetBrains Mono', system-ui, monospace; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.65;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════════════════════ */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  gap: 12px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 17px;
+  letter-spacing: -.4px;
+  display: flex; align-items: center; gap: 9px;
+  flex-shrink: 0;
+}
+.logo-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--ok); box-shadow: 0 0 8px var(--ok);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.55;transform:scale(1.35)} }
+
+.header-center { flex: 1; display: flex; justify-content: center; }
+.last-run { color: var(--muted); font-size: 11px; white-space: nowrap; }
+
+.header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--radius);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent;
+  transition: all .18s; white-space: nowrap; user-select: none;
+}
+.btn:active { transform: scale(.96); }
+
+.btn-ghost {
+  background: transparent; border-color: var(--border2); color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+.btn-primary {
+  background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent); color: #fff; }
+
+.btn-run {
+  background: rgba(16,217,160,.12); border-color: var(--ok); color: var(--ok);
+}
+.btn-run:hover { background: var(--ok); color: var(--bg); }
+.btn-run:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+.btn-danger {
+  background: rgba(255,61,92,.1); border-color: var(--danger); color: var(--danger);
+}
+.btn-danger:hover { background: var(--danger); color: #fff; }
+
+.btn-icon {
+  padding: 6px 8px; font-size: 14px;
+}
+
+/* ── Spinner ────────────────────────────────────────────── */
+.spinner {
+  width: 13px; height: 13px;
+  border: 2px solid currentColor; border-top-color: transparent;
+  border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Toast notification ──────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: var(--radius-lg); padding: 10px 20px;
+  font-size: 12px; font-weight: 600; z-index: 9999;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  box-shadow: var(--shadow); white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+#toast.ok   { border-color: var(--ok); color: var(--ok); }
+#toast.err  { border-color: var(--down); color: var(--down); }
+#toast.info { border-color: var(--accent); color: var(--accent); }
+
+/* ── Auth screen ─────────────────────────────────────────── */
+#auth-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+.auth-box {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-lg); padding: 40px; width: 380px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.auth-box h2 { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.auth-box p  { color: var(--text2); margin-bottom: 22px; font-size: 12px; }
+.auth-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); border-radius: var(--radius);
+  padding: 10px 14px; font-family: var(--font-ui); font-size: 13px;
+  margin-bottom: 12px; outline: none; transition: border-color .2s;
+}
+.auth-input:focus { border-color: var(--accent); }
+.auth-btn {
+  width: 100%; background: var(--accent); border: none; color: #fff;
+  border-radius: var(--radius); padding: 11px;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: opacity .2s;
+}
+.auth-btn:hover { opacity: .85; }
+.auth-error { color: var(--down); font-size: 11px; margin-top: 8px; min-height: 16px; }
+
+/* ── Main content ─────────────────────────────────────────── */
+main { flex: 1; padding: 22px 24px; max-width: 1700px; margin: 0 auto; width: 100%; }
+
+/* ── Summary cards ────────────────────────────────────────── */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px; margin-bottom: 20px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  transition: border-color .2s, transform .15s;
+  cursor: default;
+}
+.card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.card-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 5px; }
+.card-value { font-family: var(--font-display); font-size: 26px; font-weight: 800; line-height: 1; }
+.card-sub   { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.card.ok   .card-value { color: var(--ok); }
+.card.warn .card-value { color: var(--slow); }
+.card.err  .card-value { color: var(--down); }
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+.toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.filter-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: 20px;
+  padding: 4px 13px; cursor: pointer;
+  font-family: var(--font-ui); font-size: 11px;
+  transition: all .18s; display: flex; align-items: center; gap: 5px;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--text); }
+.filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+.toolbar-right { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+.search-input {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: 20px;
+  padding: 4px 13px; font-family: var(--font-ui); font-size: 12px;
+  outline: none; width: 190px; transition: border-color .2s, width .3s;
+}
+.search-input:focus { border-color: var(--accent); width: 240px; }
+.search-input::placeholder { color: var(--muted); }
+
+/* ── Group section ────────────────────────────────────────── */
+.group-section { margin-bottom: 26px; }
+.group-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.group-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.group-actions { display: flex; gap: 6px; align-items: center; }
+.group-meta { display: flex; gap: 10px; margin-inline-start: auto; align-items: center; }
+.group-stat { font-size: 11px; color: var(--muted); }
+.group-stat span { color: var(--text); font-weight: 600; }
+
+/* ── URL Table ────────────────────────────────────────────── */
+.url-table { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.url-row {
+  display: grid;
+  grid-template-columns: 22px 180px 1fr 100px 70px 80px 80px 80px 130px 60px;
+  align-items: center; padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  min-height: 46px; transition: background .13s; gap: 4px;
+}
+.url-row:last-child { border-bottom: none; }
+.url-row:not(.header-row) { cursor: pointer; }
+.url-row:not(.header-row):hover { background: var(--surface2); }
+.url-row.header-row { min-height: 32px; background: var(--surface2); cursor: default; }
+.col-head { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.OK           { background: var(--ok);      box-shadow: 0 0 5px var(--ok); }
+.status-dot.DOWN         { background: var(--down);    box-shadow: 0 0 5px var(--down); }
+.status-dot.SLOW         { background: var(--slow);    box-shadow: 0 0 5px var(--slow); }
+.status-dot.BLOCKED      { background: var(--blocked); box-shadow: 0 0 5px var(--blocked); }
+.status-dot.REDIRECT     { background: var(--redirect);box-shadow: 0 0 5px var(--redirect); }
+.status-dot.CONTENT_ISSUE{ background: var(--content); box-shadow: 0 0 5px var(--content); }
+.status-dot.SERP_RISK    { background: var(--serp);    box-shadow: 0 0 5px var(--serp); }
+
+.url-label { font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.url-href  { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.badge {
+  display: inline-block; padding: 2px 7px;
+  border-radius: 4px; font-size: 10px; font-weight: 700;
+  letter-spacing: .03em; text-transform: uppercase; white-space: nowrap;
+}
+.badge.OK            { background: var(--ok-dim);       color: var(--ok); }
+.badge.DOWN          { background: var(--down-dim);      color: var(--down); }
+.badge.SLOW          { background: var(--slow-dim);      color: var(--slow); }
+.badge.BLOCKED       { background: var(--blocked-dim);   color: var(--blocked); }
+.badge.REDIRECT      { background: var(--redirect-dim);  color: var(--redirect); }
+.badge.CONTENT_ISSUE { background: var(--content-dim);   color: var(--content); }
+.badge.SERP_RISK     { background: var(--serp-dim);      color: var(--serp); }
+
+.http-code { font-size: 12px; font-weight: 700; }
+.http-code.ok   { color: var(--ok); }
+.http-code.warn { color: var(--slow); }
+.http-code.err  { color: var(--down); }
+
+.ms-value.fast { color: var(--ok); }
+.ms-value.mid  { color: var(--slow); }
+.ms-value.slow { color: var(--down); }
+
+.seo-score-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 22px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+}
+.seo-score-badge.high   { background: var(--ok-dim);   color: var(--ok); }
+.seo-score-badge.medium { background: var(--slow-dim); color: var(--slow); }
+.seo-score-badge.low    { background: var(--down-dim); color: var(--down); }
+
+.row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+.url-row:hover .row-actions { opacity: 1; }
+
+/* ── Detail slide panel ──────────────────────────────────── */
+#detail-panel {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 430px; background: var(--surface);
+  border-left: 1px solid var(--border2);
+  z-index: 200; overflow-y: auto;
+  transform: translateX(calc(100% + 2px));
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+#detail-panel.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.panel-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 10px;
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+}
+.panel-title { flex: 1; min-width: 0; }
+.panel-title h3 { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.panel-title a  { font-size: 10px; color: var(--accent); text-decoration: none; word-break: break-all; }
+.panel-close {
+  background: none; border: 1px solid var(--border2);
+  color: var(--muted); border-radius: 4px;
+  width: 26px; height: 26px; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: color .2s, border-color .2s;
+}
+.panel-close:hover { color: var(--text); border-color: var(--muted); }
+
+.panel-body { padding: 18px; }
+.panel-section { margin-bottom: 22px; }
+.panel-section-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); margin-bottom: 10px;
+  padding-bottom: 5px; border-bottom: 1px solid var(--border);
+}
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+}
+.stat-box-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+.stat-box-value { font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+
+.issue-list  { list-style: none; }
+.issue-item  { display: flex; align-items: flex-start; gap: 7px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 11px; line-height: 1.5; }
+.issue-item:last-child { border-bottom: none; }
+.chart-wrap  { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; }
+.chart-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+.no-data     { color: var(--muted); font-size: 11px; }
+
+/* ── Settings / modal panels ─────────────────────────────── */
+#side-panel {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 480px; background: var(--surface);
+  border-left: 1px solid var(--border2);
+  z-index: 300; overflow-y: auto;
+  transform: translateX(calc(110% + 2px));
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+}
+#side-panel.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.side-panel-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+}
+.side-panel-header h2 { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.side-panel-body { padding: 20px; }
+
+/* ── Form elements ────────────────────────────────────────── */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 600; }
+.form-input, .form-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); border-radius: var(--radius);
+  padding: 8px 12px; font-family: var(--font-ui); font-size: 12px;
+  outline: none; transition: border-color .2s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--accent); }
+.form-select option { background: var(--surface2); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-hint { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 12px; color: var(--text2); }
+.toggle {
+  width: 36px; height: 20px; position: relative;
+  cursor: pointer; flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0; background: var(--border2);
+  border-radius: 20px; transition: background .2s;
+}
+.toggle input:checked ~ .toggle-track { background: var(--accent); }
+.toggle-thumb {
+  position: absolute; top: 3px; inset-inline-start: 3px;
+  width: 14px; height: 14px; background: #fff;
+  border-radius: 50%; transition: transform .2s;
+}
+.toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+.keywords-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); border-radius: var(--radius);
+  padding: 7px 12px; font-family: var(--font-ui); font-size: 12px;
+  outline: none; transition: border-color .2s; resize: vertical; min-height: 60px;
+}
+.keywords-input:focus { border-color: var(--accent); }
+
+.section-divider {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); padding: 10px 0 6px;
+  border-bottom: 1px solid var(--border); margin-bottom: 12px;
+}
+
+/* ── Overlay ─────────────────────────────────────────────── */
+#overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 199; display: none;
+}
+#overlay.show { display: block; }
+
+/* ── Loading ─────────────────────────────────────────────── */
+.page-loading { text-align: center; padding: 80px 20px; color: var(--muted); }
+.page-loading-spinner {
+  width: 28px; height: 28px; border: 2px solid var(--border2);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .7s linear infinite; margin: 0 auto 16px;
+}
+
+/* ── Run log ─────────────────────────────────────────────── */
+.run-log {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px;
+  font-family: var(--font-mono); font-size: 11px; line-height: 1.7;
+  max-height: 260px; overflow-y: auto; color: var(--text2);
+  direction: ltr; text-align: left;
+}
+
+/* ── Scroll ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── RTL tweaks ──────────────────────────────────────────── */
+html[dir="rtl"] .toggle input:checked ~ .toggle-thumb { transform: translateX(-16px); }
+</style>
+</head>
+<body>
+
+<!-- ── Auth Screen ──────────────────────────────────────── -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <h2>🔐 Monitor v4</h2>
+    <p>برای دسترسی توکن خود را وارد کنید</p>
+    <input id="token-input" class="auth-input" type="password" placeholder="Access token" autocomplete="off">
+    <button class="auth-btn" onclick="authenticate()">ورود به داشبورد</button>
+    <div id="auth-error" class="auth-error"></div>
+  </div>
+</div>
+
+<!-- ── App Shell ─────────────────────────────────────────── -->
+<div class="app" id="app" style="display:none">
+  <header>
+    <div class="logo"><div class="logo-dot"></div>Monitor v4</div>
+
+    <div class="header-center">
+      <span class="last-run" id="last-run-time">در حال بارگذاری…</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-icon" title="تغییر جهت RTL/LTR" onclick="toggleDir()">⇄</button>
+      <button class="btn btn-ghost" onclick="openSidePanel('url-manager')">+ افزودن URL</button>
+      <button class="btn btn-ghost" onclick="openSidePanel('settings')">⚙ تنظیمات</button>
+      <button class="btn btn-primary" onclick="loadData()" id="refresh-btn">↻ بارگذاری مجدد</button>
+      <button class="btn btn-run"     onclick="runManualTest()" id="manual-btn">▶ تست دستی</button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="page-loading" id="loading-state">
+      <div class="page-loading-spinner"></div>در حال بارگذاری…
+    </div>
+    <div id="dashboard" style="display:none"></div>
+  </main>
+</div>
+
+<!-- ── Overlay ───────────────────────────────────────────── -->
+<div id="overlay" onclick="closeAllPanels()"></div>
+
+<!-- ── Detail panel ──────────────────────────────────────── -->
+<div id="detail-panel"><div id="panel-inner"></div></div>
+
+<!-- ── Side panel (settings / url manager) ───────────────── -->
+<div id="side-panel"><div id="side-panel-inner"></div></div>
+
+<!-- ── Toast ─────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════
+const API      = 'api.php';
+const MONITOR  = 'monitor.php';    // Manual test endpoint
+
+let TOKEN        = '';
+let currentData  = null;
+let activeGroup  = 'ALL';
+let searchQuery  = '';
+let autoRefreshId = null;
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+function authenticate() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  TOKEN = t;
+  api('latest').then(data => {
+    if (data && !data.error) {
+      localStorage.setItem('mtoken', t);
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      processData(data);
+      startAutoRefresh();
+    } else {
+      document.getElementById('auth-error').textContent = 'توکن نامعتبر است.';
+      TOKEN = '';
+    }
+  }).catch(() => { document.getElementById('auth-error').textContent = 'خطا در اتصال به API.'; TOKEN = ''; });
+}
+
+document.getElementById('token-input').addEventListener('keydown', e => { if (e.key === 'Enter') authenticate(); });
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('mtoken');
+  if (!saved) return;
+  TOKEN = saved;
+  document.getElementById('token-input').value = saved;
+  api('latest').then(data => {
+    if (data && !data.error) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      processData(data);
+      startAutoRefresh();
+    } else { localStorage.removeItem('mtoken'); TOKEN = ''; }
+  }).catch(() => { TOKEN = ''; });
+});
+
+
+// ═══════════════════════════════════════════════════════════
+//  API HELPERS
+// ═══════════════════════════════════════════════════════════
+function api(action, extra = '') {
+  return fetch(`${API}?token=${enc(TOKEN)}&action=${action}${extra}`, {
+    headers: { 'X-Token': TOKEN }
+  }).then(r => r.json());
+}
+
+function apiPost(action, body) {
+  return fetch(`${API}?token=${enc(TOKEN)}&action=${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Token': TOKEN },
+    body: JSON.stringify(body),
+  }).then(r => r.json());
+}
+
+function apiDelete(action, body) {
+  return fetch(`${API}?token=${enc(TOKEN)}&action=${action}`, {
+    method: 'POST',   // using POST+action for cPanel compat
+    headers: { 'Content-Type': 'application/json', 'X-Token': TOKEN },
+    body: JSON.stringify(body),
+  }).then(r => r.json());
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  MANUAL TEST BUTTON
+// ═══════════════════════════════════════════════════════════
+async function runManualTest() {
+  const btn = document.getElementById('manual-btn');
+  const refreshBtn = document.getElementById('refresh-btn');
+
+  // Disable both buttons during run
+  btn.disabled = true;
+  refreshBtn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> در حال اجرا…';
+  toast('در حال اجرای بررسی…', 'info');
+
+  try {
+    // Call monitor.php with token in URL param (most reliable on cPanel)
+    // Also sends token in headers as fallback
+    const res = await fetch(`${MONITOR}?token=${enc(TOKEN)}`, {
+      method: 'GET',
+      headers: {
+        'X-Monitor-Token': TOKEN,
+        'X-Token': TOKEN,
+      },
+    });
+
+    if (res.status === 401) {
+      toast('خطای احراز هویت برای monitor.php', 'err');
+      return;
+    }
+    if (!res.ok) {
+      toast(`خطا: HTTP ${res.status}`, 'err');
+      return;
+    }
+
+    // Read as text first so we can show PHP errors clearly
+    const rawText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      // PHP returned HTML/error output instead of JSON
+      const snippet = rawText.replace(/<[^>]+>/g, '').trim().substring(0, 200);
+      toast('PHP error in monitor.php: ' + snippet, 'err');
+      console.error('monitor.php raw output:', rawText);
+      return;
+    }
+
+    if (data.error) {
+      toast('Run error: ' + data.error, 'err');
+      return;
+    }
+
+    // data IS the fresh latest.json payload — display immediately
+    processData(data);
+    toast(`✓ تست کامل شد — ${Object.keys(data.urls || {}).length} URL بررسی شد`, 'ok');
+
+    // Show run log if available
+    if (data.run_log && data.run_log.length) {
+      showRunLog(data.run_log, data.summary || '');
+    }
+
+  } catch (err) {
+    // "Unexpected token <" means PHP returned HTML (error page) instead of JSON
+    if (err.message && err.message.includes('token')) {
+      toast('PHP error: check monitor.php logs. Enable display_errors=Off in php.ini', 'err');
+    } else {
+      toast('Network error: ' + err.message, 'err');
+    }
+  } finally {
+    btn.disabled = false;
+    refreshBtn.disabled = false;
+    btn.innerHTML = '▶ تست دستی';
+  }
+}
+
+function showRunLog(lines, summary) {
+  // Opens the detail panel with run log output
+  const html = `
+  <div class="panel-header">
+    <div class="panel-title">
+      <h3>نتیجه تست دستی</h3>
+      <a href="#">${esc(summary)}</a>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <div class="panel-section-title">خروجی اجرا</div>
+      <div class="run-log">${lines.map(l => esc(l)).join('\n')}</div>
+    </div>
+  </div>`;
+  document.getElementById('panel-inner').innerHTML = html;
+  document.getElementById('detail-panel').classList.add('open');
+  syncOverlay();
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  DATA LOAD / REFRESH
+// ═══════════════════════════════════════════════════════════
+function loadData() {
+  api('latest').then(data => { if (data && !data.error) processData(data); });
+}
+
+function startAutoRefresh() {
+  clearInterval(autoRefreshId);
+  autoRefreshId = setInterval(loadData, 60000);
+}
+
+function processData(data) {
+  currentData = data;
+  document.getElementById('loading-state').style.display  = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('last-run-time').textContent = 'آخرین اجرا: ' + (data.ts || '—');
+  renderDashboard(data);
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD RENDER
+// ═══════════════════════════════════════════════════════════
+function renderDashboard(data) {
+  const urls   = Object.values(data.urls   || {});
+  const groups = data.groups || [];
+  const dash   = document.getElementById('dashboard');
+
+  // ── Summary cards ─────────────────────────────────────
+  const total  = urls.length;
+  const ok     = urls.filter(u => u.error_category === 'OK').length;
+  const down   = urls.filter(u => u.error_category === 'DOWN').length;
+  const issues = urls.filter(u => u.error_category !== 'OK').length;
+  const avgMs  = total ? Math.round(urls.reduce((s,u) => s + u.response_ms, 0) / total) : 0;
+  const avgSeo = total ? Math.round(urls.reduce((s,u) => s + (u.seo_score||0), 0) / total) : 0;
+  const alerts24h = urls.reduce((s,u) => s + (u.errors_24h||0), 0);
+
+  let html = `<div class="summary-cards">
+    <div class="card ok">   <div class="card-label">آنلاین</div>    <div class="card-value">${ok}</div>        <div class="card-sub">از ${total} URL</div></div>
+    <div class="card ${down>0?'err':'ok'}"><div class="card-label">آفلاین</div>    <div class="card-value">${down}</div>      <div class="card-sub">نیاز به توجه</div></div>
+    <div class="card ${issues-down>0?'warn':'ok'}"><div class="card-label">با مشکل</div><div class="card-value">${issues}</div><div class="card-sub">هشدار/خطا</div></div>
+    <div class="card ${avgMs>2000?'warn':'ok'}"><div class="card-label">میانگین زمان</div><div class="card-value">${avgMs}<span style="font-size:13px;font-weight:400">ms</span></div><div class="card-sub">همه URL‌ها</div></div>
+    <div class="card ${avgSeo<60?'err':avgSeo<80?'warn':'ok'}"><div class="card-label">امتیاز SEO</div><div class="card-value">${avgSeo}</div><div class="card-sub">میانگین /100</div></div>
+    <div class="card ${alerts24h>0?'warn':'ok'}"><div class="card-label">هشدار ۲۴h</div><div class="card-value">${alerts24h}</div><div class="card-sub">رویداد خطا</div></div>
+  </div>`;
+
+  // ── Group filter toolbar ───────────────────────────────
+  html += `<div class="toolbar">
+    <button class="filter-btn ${activeGroup==='ALL'?'active':''}" onclick="setGroup('ALL')">همه گروه‌ها</button>`;
+  groups.forEach(g => {
+    const h = g.ok===g.total?'🟢':(g.ok===0?'🔴':'🟡');
+    html += `<button class="filter-btn ${activeGroup===g.name?'active':''}" onclick="setGroup(${jsStr(g.name)})">${h} ${esc(g.name)} <span style="opacity:.5">${g.total}</span></button>`;
+  });
+  html += `<div class="toolbar-right">
+    <input class="search-input" type="text" placeholder="جستجوی URL…" oninput="setSearch(this.value)" value="${esc(searchQuery)}">
+  </div></div>`;
+
+  // ── Group sections ────────────────────────────────────
+  const groupMap = {};
+  Object.entries(data.urls||{}).forEach(([k,u]) => {
+    if (!groupMap[u.group]) groupMap[u.group] = {};
+    groupMap[u.group][k] = u;
+  });
+
+  Object.entries(groupMap).forEach(([gName, urlMap]) => {
+    if (activeGroup !== 'ALL' && activeGroup !== gName) return;
+    const filtered = Object.entries(urlMap).filter(([k,u]) =>
+      !searchQuery || u.label.toLowerCase().includes(searchQuery.toLowerCase()) || u.url.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (!filtered.length) return;
+
+    const gi = groups.find(g => g.name === gName) || {};
+
+    html += `<div class="group-section">
+      <div class="group-header">
+        <div class="group-name">${esc(gName)}</div>
+        <div class="group-actions">
+          <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="openSidePanel('url-manager', ${jsStr(gName)})">+ URL</button>
+          <button class="btn btn-danger" style="font-size:10px;padding:3px 8px" onclick="deleteGroup(${jsStr(gName)})">× حذف گروه</button>
+        </div>
+        <div class="group-meta">
+          <span class="group-stat">${filtered.filter(([,u])=>u.error_category==='OK').length}/${filtered.length} <span style="color:var(--ok)">OK</span></span>
+          <span class="group-stat">میانگین <span>${gi.avg_ms||0}ms</span></span>
+          <span class="group-stat">SEO <span>${gi.avg_seo||0}</span></span>
+          <span class="group-stat">خطا ۲۴h <span>${gi.errors_24h||0}</span></span>
+        </div>
+      </div>
+      <div class="url-table">
+        <div class="url-row header-row">
+          <div></div>
+          <div class="col-head">عنوان</div>
+          <div class="col-head">آدرس</div>
+          <div class="col-head">وضعیت</div>
+          <div class="col-head">HTTP</div>
+          <div class="col-head">زمان</div>
+          <div class="col-head">SEO</div>
+          <div class="col-head">خطا</div>
+          <div class="col-head">روند</div>
+          <div class="col-head"></div>
+        </div>`;
+
+    filtered.forEach(([key, u]) => {
+      const cat    = u.error_category || 'OK';
+      const hCls   = u.http_status >= 500 ? 'err' : u.http_status >= 400 ? 'warn' : 'ok';
+      const msCls  = u.response_ms > 3000 ? 'slow' : u.response_ms > 1500 ? 'mid' : 'fast';
+      const seoVal = u.seo_score || 0;
+      const seoCls = seoVal >= 80 ? 'high' : seoVal >= 50 ? 'medium' : 'low';
+      const spark  = JSON.stringify(u.sparkline || []);
+
+      html += `<div class="url-row" onclick="openPanel(${jsStr(key)})">
+        <div><div class="status-dot ${cat}"></div></div>
+        <div><div class="url-label" title="${esc(u.label)}">${esc(u.label)}</div></div>
+        <div class="url-href" title="${esc(u.url)}">${esc(u.url)}</div>
+        <div><span class="badge ${cat}">${cat.replace('_',' ')}</span></div>
+        <div class="http-code ${hCls}">${u.http_status||'—'}</div>
+        <div class="ms-value ${msCls}">${u.response_ms}ms</div>
+        <div><span class="seo-score-badge ${seoCls}">${seoVal}</span></div>
+        <div style="font-size:11px;color:var(--muted)"><span style="color:var(--down)">${u.errors_24h}</span>/<span style="color:var(--slow)">${u.errors_7d}</span></div>
+        <div><canvas class="sparkline" data-values="${esc(spark)}" width="124" height="30"></canvas></div>
+        <div class="row-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost btn-icon" title="ویرایش" onclick="openSidePanel('edit-url',${jsStr(gName)},${jsStr(u.url)})">✎</button>
+          <button class="btn btn-danger btn-icon" title="حذف" onclick="deleteUrl(${jsStr(gName)},${jsStr(u.url)})">×</button>
+        </div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  dash.innerHTML = html;
+
+  // Draw sparklines
+  dash.querySelectorAll('canvas.sparkline').forEach(c => {
+    try { drawSparkline(c, JSON.parse(c.getAttribute('data-values') || '[]')); } catch(e){}
+  });
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  SPARKLINE
+// ═══════════════════════════════════════════════════════════
+function drawSparkline(canvas, values) {
+  if (!values || !values.length) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w   = canvas.offsetWidth  || 124;
+  const h   = canvas.offsetHeight || 30;
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const max   = Math.max(...values, 1);
+  const min   = Math.min(...values, 0);
+  const range = max - min || 1;
+  const step  = w / (values.length - 1 || 1);
+  const pad   = 3;
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, 'rgba(79,142,247,.22)');
+  grad.addColorStop(1, 'rgba(79,142,247,0)');
+
+  ctx.beginPath();
+  values.forEach((v, i) => {
+    const x = i * step;
+    const y = h - ((v - min) / range) * (h - pad * 2) - pad;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#4f8ef7';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.lineTo((values.length - 1) * step, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Threshold line at 3000ms
+  if (max > 3000) {
+    const ty = h - ((3000 - min) / range) * (h - pad * 2) - pad;
+    ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty);
+    ctx.strokeStyle = 'rgba(246,166,35,.4)';
+    ctx.lineWidth = 1; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ═══════════════════════════════════════════════════════════
+function openPanel(key) {
+  if (!currentData?.urls?.[key]) return;
+  const u   = currentData.urls[key];
+  const cat = u.error_category || 'OK';
+
+  let issueHtml = (u.issues?.length)
+    ? u.issues.map(i => `<li class="issue-item"><span class="badge ${i.type||'OK'}">${esc(i.type||'OK')}</span><span>${esc(i.detail)}</span></li>`).join('')
+    : `<li class="issue-item" style="color:var(--ok)">✓ مشکلی یافت نشد</li>`;
+
+  document.getElementById('panel-inner').innerHTML = `
+  <div class="panel-header">
+    <div class="panel-title">
+      <h3>${esc(u.label)}</h3>
+      <a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.url)}</a>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <div class="panel-section-title">وضعیت فعلی</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-box-label">دسته‌بندی</div><div class="stat-box-value"><span class="badge ${cat}">${cat.replace('_',' ')}</span></div></div>
+        <div class="stat-box"><div class="stat-box-label">کد HTTP</div><div class="stat-box-value">${u.http_status||'—'}</div></div>
+        <div class="stat-box"><div class="stat-box-label">زمان پاسخ</div><div class="stat-box-value">${u.response_ms}ms</div></div>
+        <div class="stat-box"><div class="stat-box-label">امتیاز SEO</div><div class="stat-box-value" style="color:${u.seo_score>=80?'var(--ok)':u.seo_score>=50?'var(--slow)':'var(--down)'}">${u.seo_score||0}/100</div></div>
+        <div class="stat-box"><div class="stat-box-label">خطا ۲۴h</div><div class="stat-box-value" style="color:var(--down)">${u.errors_24h||0}</div></div>
+        <div class="stat-box"><div class="stat-box-label">خطا ۷d</div><div class="stat-box-value" style="color:var(--slow)">${u.errors_7d||0}</div></div>
+      </div>
+    </div>
+    ${u.vitals ? `<div class="panel-section">
+      <div class="panel-section-title">Core Web Vitals</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-box-label">TTFB</div><div class="stat-box-value">${u.vitals.ttfb_ms}ms</div><div class="stat-box-label">${esc(u.vitals.ttfb_class||'')}</div></div>
+        <div class="stat-box"><div class="stat-box-label">سرعت</div><div class="stat-box-value">${esc(u.vitals.speed_class||'')}</div></div>
+        <div class="stat-box"><div class="stat-box-label">حجم</div><div class="stat-box-value">${u.vitals.size_kb}KB</div></div>
+        <div class="stat-box"><div class="stat-box-label">زمان کل</div><div class="stat-box-value">${u.vitals.total_ms}ms</div></div>
+      </div>
+    </div>` : ''}
+    <div class="panel-section">
+      <div class="panel-section-title">روند پاسخ (۲۴ بررسی اخیر)</div>
+      <div class="chart-wrap"><canvas id="panel-spark" height="56" style="width:100%"></canvas></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">مشکلات شناسایی‌شده</div>
+      <ul class="issue-list">${issueHtml}</ul>
+    </div>
+    <div class="panel-section" id="history-chart-wrap">
+      <div class="panel-section-title">تاریخچه ۷ روزه</div>
+      <div style="color:var(--muted);font-size:11px">در حال بارگذاری…</div>
+    </div>
+  </div>`;
+
+  setTimeout(() => {
+    const c = document.getElementById('panel-spark');
+    if (c) drawSparkline(c, u.sparkline || []);
+  }, 40);
+
+  api('trend', `&key=${key}&days=7`).then(trend => renderHistoryChart(trend, 'history-chart-wrap'));
+
+  document.getElementById('detail-panel').classList.add('open');
+  syncOverlay();
+}
+
+function renderHistoryChart(trend, sectionId) {
+  const wrap    = document.getElementById(sectionId);
+  if (!wrap) return;
+  const entries = trend.trend || [];
+  if (!entries.length) { wrap.querySelector('div:last-child').innerHTML = '<span class="no-data">داده تاریخی موجود نیست.</span>'; return; }
+
+  const w    = 370;
+  const dpr  = window.devicePixelRatio || 1;
+  const maxMs  = Math.max(...entries.map(e => e.avg_ms), 1);
+  const maxErr = Math.max(...entries.map(e => e.errors), 1);
+  const bw     = Math.floor(w / entries.length) - 2;
+
+  wrap.innerHTML = `
+    <div class="panel-section-title">تاریخچه ۷ روزه</div>
+    <div class="chart-wrap">
+      <div class="chart-label">میانگین زمان پاسخ (ms)</div>
+      <canvas id="hc-ms" width="${w*dpr}" height="${70*dpr}" style="width:${w}px;height:70px"></canvas>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;direction:ltr">
+        <span>${entries[0]?.date||''}</span><span>${entries[entries.length-1]?.date||''}</span>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-label">خطاها در روز</div>
+      <canvas id="hc-err" width="${w*dpr}" height="${44*dpr}" style="width:${w}px;height:44px"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-label">امتیاز SEO روزانه</div>
+      <canvas id="hc-seo" width="${w*dpr}" height="${44*dpr}" style="width:${w}px;height:44px"></canvas>
+    </div>`;
+
+  // Response time bars
+  drawBarChart('hc-ms', entries.map(e=>e.avg_ms), maxMs, 70, dpr, bw, '#4f8ef7', 3000);
+  // Error bars
+  drawBarChart('hc-err', entries.map(e=>e.errors), maxErr, 44, dpr, bw, 'rgba(255,61,92,.7)', null);
+  // SEO score bars (inverted scale: 100 = full height)
+  drawBarChart('hc-seo', entries.map(e=>e.avg_seo??100), 100, 44, dpr, bw, 'rgba(16,217,160,.7)', null);
+}
+
+function drawBarChart(id, values, maxVal, h, dpr, bw, color, thresholdVal) {
+  const c  = document.getElementById(id);
+  if (!c) return;
+  const cx = c.getContext('2d');
+  cx.scale(dpr, dpr);
+  const w  = c.width / dpr;
+  values.forEach((v, i) => {
+    const x    = i * (bw + 2);
+    const barH = Math.max(v > 0 ? 2 : 0, (v / maxVal) * (h - 6));
+    cx.fillStyle = (thresholdVal && v > thresholdVal) ? 'rgba(246,166,35,.75)' : color;
+    cx.fillRect(x, h - barH, bw, barH);
+  });
+  if (thresholdVal) {
+    const ty = h - (thresholdVal / maxVal) * (h - 6);
+    cx.beginPath(); cx.moveTo(0, ty); cx.lineTo(w, ty);
+    cx.strokeStyle = 'rgba(246,166,35,.4)'; cx.lineWidth = 1;
+    cx.setLineDash([4,4]); cx.stroke(); cx.setLineDash([]);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  SIDE PANEL — Settings & URL Manager
+// ═══════════════════════════════════════════════════════════
+async function openSidePanel(mode, groupHint = '', urlHint = '') {
+  // Close detail panel silently (don't touch overlay yet)
+  document.getElementById('detail-panel').classList.remove('open');
+  const panel = document.getElementById('side-panel');
+  const inner = document.getElementById('side-panel-inner');
+
+  if (mode === 'settings') {
+    const cfg = await api('settings');
+    inner.innerHTML = renderSettingsForm(cfg);
+  } else if (mode === 'url-manager') {
+    inner.innerHTML = renderUrlForm(groupHint, null);
+  } else if (mode === 'edit-url') {
+    const groups = await api('groups');
+    const urlCfg = (groups[groupHint] || []).find(u => u.url === urlHint);
+    inner.innerHTML = renderUrlForm(groupHint, urlCfg);
+  }
+
+  panel.classList.add('open');
+  syncOverlay();
+}
+
+function renderSettingsForm(cfg) {
+  cfg = cfg || {};
+  return `
+  <div class="side-panel-header">
+    <h2>⚙ تنظیمات سیستم</h2>
+    <button class="panel-close" onclick="closeSidePanel()">✕</button>
+  </div>
+  <div class="side-panel-body">
+    <div class="section-divider">Telegram</div>
+    <div class="form-group">
+      <label class="form-label">Bot Token</label>
+      <input class="form-input" id="s-tg-token" value="${esc(cfg.telegram_bot_token||'')}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Chat ID</label>
+      <input class="form-input" id="s-tg-chat" value="${esc(cfg.telegram_chat_id||'')}">
+    </div>
+
+    <div class="section-divider">عملکرد</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">آستانه کند (ms)</label>
+        <input class="form-input" id="s-slow" type="number" value="${cfg.slow_threshold_ms||3000}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">آستانه TTFB (ms)</label>
+        <input class="form-input" id="s-ttfb" type="number" value="${cfg.ttfb_slow_ms||600}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">تعداد تلاش مجدد</label>
+        <input class="form-input" id="s-retries" type="number" min="1" max="10" value="${cfg.max_retries||3}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">تاخیر بین تلاش (ثانیه)</label>
+        <input class="form-input" id="s-delay" type="number" value="${cfg.retry_delay_sec||5}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Timeout درخواست (ثانیه)</label>
+        <input class="form-input" id="s-timeout" type="number" value="${cfg.request_timeout||20}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">کولداون هشدار (دقیقه)</label>
+        <input class="form-input" id="s-cooldown" type="number" value="${cfg.alert_cooldown_min||60}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">افت امتیاز SEO برای هشدار (%)</label>
+        <input class="form-input" id="s-seo-drop" type="number" value="${cfg.seo_score_drop_pct||10}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">حداکثر تاریخچه (ردیف)</label>
+        <input class="form-input" id="s-maxhist" type="number" value="${cfg.max_history_entries||2000}">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveSettings()">💾 ذخیره تنظیمات</button>
+  </div>`;
+}
+
+async function saveSettings() {
+  const payload = {
+    telegram_bot_token:  document.getElementById('s-tg-token').value.trim(),
+    telegram_chat_id:    document.getElementById('s-tg-chat').value.trim(),
+    slow_threshold_ms:   parseInt(document.getElementById('s-slow').value),
+    ttfb_slow_ms:        parseInt(document.getElementById('s-ttfb').value),
+    max_retries:         parseInt(document.getElementById('s-retries').value),
+    retry_delay_sec:     parseInt(document.getElementById('s-delay').value),
+    request_timeout:     parseInt(document.getElementById('s-timeout').value),
+    alert_cooldown_min:  parseInt(document.getElementById('s-cooldown').value),
+    seo_score_drop_pct:  parseInt(document.getElementById('s-seo-drop').value),
+    max_history_entries: parseInt(document.getElementById('s-maxhist').value),
+  };
+  const res = await apiPost('settings', payload);
+  if (res.ok) { toast('✓ تنظیمات ذخیره شد', 'ok'); closeSidePanel(); }
+  else         toast('خطا در ذخیره', 'err');
+}
+
+function renderUrlForm(groupHint, existing) {
+  const isEdit = !!existing;
+  const u = existing || {};
+  const groups = Object.keys(currentData?.urls ? {} : {});
+
+  const chk = (id, label, val) => `
+    <div class="toggle-row">
+      <span class="toggle-label">${label}</span>
+      <label class="toggle">
+        <input type="checkbox" id="${id}" ${val?'checked':''}>
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>`;
+
+  return `
+  <div class="side-panel-header">
+    <h2>${isEdit ? '✎ ویرایش URL' : '+ افزودن URL'}</h2>
+    <button class="panel-close" onclick="closeSidePanel()">✕</button>
+  </div>
+  <div class="side-panel-body">
+    <div class="section-divider">اطلاعات URL</div>
+    <div class="form-group">
+      <label class="form-label">آدرس URL *</label>
+      <input class="form-input" id="u-url" value="${esc(u.url||'')}" placeholder="https://example.com" ${isEdit?'readonly':''}>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">عنوان (Label) *</label>
+        <input class="form-input" id="u-label" value="${esc(u.label||'')}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">نام گروه *</label>
+        <input class="form-input" id="u-group" value="${esc(groupHint||u.group||'')}" placeholder="Main Site">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">کد HTTP مورد انتظار</label>
+        <input class="form-input" id="u-status" type="number" value="${u.expected_status||200}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">کلمه کلیدی ضروری</label>
+        <input class="form-input" id="u-kw" value="${esc(u.keyword_present||'')}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">کلمات کلیدی هدف (با کاما جدا کنید)</label>
+      <textarea class="keywords-input" id="u-tkws">${esc((u.target_keywords||[]).join(', '))}</textarea>
+      <div class="form-hint">مثال: سئو, بهینه‌سازی, دیجیتال مارکتینگ</div>
+    </div>
+
+    <div class="section-divider">بررسی‌های فعال</div>
+    ${chk('u-seo',    'بررسی SEO پایه',               u.check_seo)}
+    ${chk('u-content','تشخیص تغییر محتوا',             u.check_content)}
+    ${chk('u-index',  'بررسی ایندکس‌پذیری',            u.check_indexability)}
+    ${chk('u-vitals', 'Core Web Vitals',               u.check_vitals)}
+    ${chk('u-kwcheck','بررسی یکپارچگی کلمه کلیدی',    u.check_keywords)}
+    ${chk('u-serp',   'شناسایی ریسک SERP',             u.check_serp_risk)}
+    ${chk('u-impact', 'تحلیل تاثیر تغییر',             u.check_change_impact)}
+
+    <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveUrl()">
+      ${isEdit ? '💾 ذخیره تغییرات' : '+ ثبت URL'}
+    </button>
+  </div>`;
+}
+
+async function saveUrl() {
+  const url    = document.getElementById('u-url').value.trim();
+  const label  = document.getElementById('u-label').value.trim();
+  const group  = document.getElementById('u-group').value.trim();
+  if (!url || !label || !group) { toast('URL، عنوان و گروه الزامی هستند', 'err'); return; }
+
+  const kwRaw = document.getElementById('u-tkws').value;
+  const kws   = kwRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+  const payload = {
+    url, label, group,
+    expected_status:     parseInt(document.getElementById('u-status').value) || 200,
+    keyword_present:     document.getElementById('u-kw').value.trim(),
+    target_keywords:     kws,
+    check_seo:           document.getElementById('u-seo').checked,
+    check_content:       document.getElementById('u-content').checked,
+    check_indexability:  document.getElementById('u-index').checked,
+    check_vitals:        document.getElementById('u-vitals').checked,
+    check_keywords:      document.getElementById('u-kwcheck').checked,
+    check_serp_risk:     document.getElementById('u-serp').checked,
+    check_change_impact: document.getElementById('u-impact').checked,
+  };
+
+  const res = await apiPost('groups', payload);
+  if (res.ok) {
+    toast(`✓ URL ${res.action === 'added' ? 'اضافه' : 'به‌روز'} شد`, 'ok');
+    closeSidePanel();
+    loadData();
+  } else {
+    toast('خطا: ' + (res.error || 'ناشناخته'), 'err');
+  }
+}
+
+async function deleteUrl(group, url) {
+  if (!confirm(`حذف ${url} از گروه "${group}"?`)) return;
+  const res = await apiDelete('delete_url', { group, url });
+  if (res.ok) { toast('URL حذف شد', 'ok'); loadData(); }
+  else toast('خطا در حذف', 'err');
+}
+
+async function deleteGroup(group) {
+  if (!confirm(`حذف کامل گروه "${group}" و تمام URL‌های آن?`)) return;
+  const res = await apiDelete('delete_group', { group });
+  if (res.ok) { toast(`گروه "${group}" حذف شد`, 'ok'); loadData(); }
+  else toast('خطا در حذف گروه', 'err');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  PANEL HELPERS
+// ═══════════════════════════════════════════════════════════
+function closePanel() {
+  document.getElementById('detail-panel').classList.remove('open');
+  syncOverlay();
+}
+
+function closeSidePanel() {
+  document.getElementById('side-panel').classList.remove('open');
+  syncOverlay();
+}
+
+function closeAllPanels() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('side-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// Only show overlay when at least one panel is open
+function syncOverlay() {
+  const detailOpen = document.getElementById('detail-panel').classList.contains('open');
+  const sideOpen   = document.getElementById('side-panel').classList.contains('open');
+  document.getElementById('overlay').classList.toggle('show', detailOpen || sideOpen);
+}
+
+function setGroup(g) {
+  activeGroup = g;
+  if (currentData) renderDashboard(currentData);
+}
+
+function setSearch(v) {
+  searchQuery = v;
+  if (currentData) renderDashboard(currentData);
+}
+
+function toggleDir() {
+  const html = document.documentElement;
+  if (html.getAttribute('dir') === 'rtl') {
+    html.setAttribute('dir', 'ltr'); html.classList.add('ltr');
+  } else {
+    html.setAttribute('dir', 'rtl'); html.classList.remove('ltr');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent  = msg;
+  el.className    = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// Produces a JS-safe quoted string for inline onclick
+function jsStr(s) {
+  // Produces a single-quoted JS string literal safe inside double-quoted HTML onclick=""
+  return "'" + String(s ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'") + "'";
+}
+function enc(s)   { return encodeURIComponent(s); }
+</script>
+</body>
+</html>

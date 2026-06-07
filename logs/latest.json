@@ -1,0 +1,499 @@
+{
+    "ts": "2026-06-04 12:44:07",
+    "urls": {
+        "f94f15790dd7312e8a20c909c41e6712": {
+            "ts": "2026-06-04 12:44:07",
+            "url": "https://qtest.ir",
+            "label": "qtest",
+            "group": "qtest",
+            "http_status": 200,
+            "response_ms": 2203,
+            "error_category": "CONTENT_ISSUE",
+            "issues": [
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Multiple <h1> tags (2).",
+                    "seo_impact": "medium"
+                }
+            ],
+            "retries": 1,
+            "vitals": [],
+            "indexability": [],
+            "keyword_check": [],
+            "change_analysis": [],
+            "serp_risks": [],
+            "seo_score": 95,
+            "sparkline": [
+                2203,
+                1249,
+                2204,
+                1181,
+                2203,
+                10763,
+                2203,
+                2205,
+                1361,
+                2203,
+                2978,
+                2203,
+                1146,
+                2203,
+                2204,
+                2203,
+                2204,
+                2403,
+                2407,
+                2203,
+                2204,
+                2203,
+                2203,
+                2203
+            ],
+            "score_sparkline": [
+                95,
+                95,
+                95,
+                95,
+                95,
+                90,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95,
+                95
+            ],
+            "errors_24h": 27,
+            "errors_7d": 27,
+            "last_checked": "2026-06-04 12:44:07"
+        },
+        "a07e1ea67670264432d56ddb81eb267b": {
+            "ts": "2026-06-04 12:44:09",
+            "url": "https://inaser.ir",
+            "label": "inaser",
+            "group": "inaser",
+            "http_status": 200,
+            "response_ms": 276,
+            "error_category": "OK",
+            "issues": [],
+            "retries": 1,
+            "vitals": [],
+            "indexability": [],
+            "keyword_check": [],
+            "change_analysis": [],
+            "serp_risks": [],
+            "seo_score": 100,
+            "sparkline": [
+                22,
+                164,
+                15,
+                22,
+                14,
+                21,
+                14,
+                22,
+                164,
+                17,
+                21,
+                14,
+                16,
+                20,
+                13,
+                20,
+                14,
+                14,
+                18,
+                16,
+                20,
+                23,
+                15,
+                276
+            ],
+            "score_sparkline": [
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100
+            ],
+            "errors_24h": 0,
+            "errors_7d": 0,
+            "last_checked": "2026-06-04 12:44:07"
+        },
+        "4f9096fc5548bb284772b238b2d5ca5a": {
+            "ts": "2026-06-04 12:44:10",
+            "url": "https://www.digikala.com/",
+            "label": "digikala",
+            "group": "digikala",
+            "http_status": 200,
+            "response_ms": 96,
+            "error_category": "CONTENT_ISSUE",
+            "issues": [
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Missing or empty <title>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Missing or empty meta description.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Missing <h1>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Missing og:title.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "SEO: Missing og:description.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "KEYWORD: \"دیجی کالا\" not in <title>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "KEYWORD: \"دیجی کالا\" not in <h1>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "KEYWORD: \"دیجی کالا\" not in meta description.",
+                    "seo_impact": "medium"
+                }
+            ],
+            "retries": 1,
+            "vitals": {
+                "ttfb_ms": 96,
+                "total_ms": 96,
+                "size_kb": 1.3999999999999999,
+                "speed_class": "Fast",
+                "ttfb_class": "Good"
+            },
+            "indexability": {
+                "is_blocked": false,
+                "canonical": "",
+                "issues": [],
+                "warnings": [
+                    "No canonical tag found."
+                ]
+            },
+            "keyword_check": {
+                "issues": [
+                    "KEYWORD: \"دیجی کالا\" not in <title>.",
+                    "KEYWORD: \"دیجی کالا\" not in <h1>.",
+                    "KEYWORD: \"دیجی کالا\" not in meta description."
+                ],
+                "results": [
+                    {
+                        "keyword": "دیجی کالا",
+                        "in_title": false,
+                        "in_h1": false,
+                        "in_desc": false,
+                        "in_first_p": false
+                    }
+                ]
+            },
+            "change_analysis": [],
+            "serp_risks": [],
+            "seo_score": 60,
+            "sparkline": [
+                112,
+                102,
+                98,
+                97,
+                82,
+                89,
+                74,
+                89,
+                92,
+                87,
+                85,
+                82,
+                87,
+                111,
+                84,
+                105,
+                101,
+                98,
+                148,
+                84,
+                194,
+                92,
+                96
+            ],
+            "score_sparkline": [
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60,
+                60
+            ],
+            "errors_24h": 23,
+            "errors_7d": 23,
+            "last_checked": "2026-06-04 12:44:07"
+        },
+        "b44adc8e17063f3384f9bdeddeec2061": {
+            "ts": "2026-06-04 12:44:10",
+            "url": "1rishe.com",
+            "label": "1rishe",
+            "group": "1rishe",
+            "http_status": 301,
+            "response_ms": 20003,
+            "error_category": "DOWN",
+            "issues": [
+                {
+                    "type": "DOWN",
+                    "detail": "Expected HTTP 200, got 301 (Operation timed out after 20000 milliseconds with 0 bytes received) after 3 attempt(s).",
+                    "seo_impact": "medium"
+                }
+            ],
+            "retries": 3,
+            "vitals": [],
+            "indexability": [],
+            "keyword_check": [],
+            "change_analysis": [],
+            "serp_risks": [],
+            "seo_score": 85,
+            "sparkline": [
+                12005,
+                14748,
+                10002,
+                18329,
+                18326,
+                18447,
+                14006,
+                20004,
+                20003,
+                16008,
+                12038,
+                20002,
+                19100,
+                20003
+            ],
+            "score_sparkline": [
+                90,
+                90,
+                90,
+                90,
+                90,
+                90,
+                90,
+                85,
+                85,
+                90,
+                90,
+                85,
+                90,
+                85
+            ],
+            "errors_24h": 14,
+            "errors_7d": 14,
+            "last_checked": "2026-06-04 12:44:07"
+        },
+        "dea64ca4a3632b8fd1fa96efd2681b5b": {
+            "ts": "2026-06-04 12:45:20",
+            "url": "https://1rishe.com/p/potato-seasoning",
+            "label": "potato-seasoning",
+            "group": "1rishe",
+            "http_status": 200,
+            "response_ms": 16839,
+            "error_category": "SLOW",
+            "issues": [
+                {
+                    "type": "SLOW",
+                    "detail": "Response 16839ms exceeds 3000ms threshold.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "SLOW",
+                    "detail": "Vitals: TTFB 16823ms, Size 50.7KB — Slow",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "KEYWORD: \"ریشه\" not in <h1>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "KEYWORD: \"یک\" not in <h1>.",
+                    "seo_impact": "medium"
+                },
+                {
+                    "type": "CONTENT_ISSUE",
+                    "detail": "CHANGE: HTML changed (no critical SEO tags affected).",
+                    "seo_impact": "low"
+                }
+            ],
+            "retries": 3,
+            "vitals": {
+                "ttfb_ms": 16823,
+                "total_ms": 16839,
+                "size_kb": 50.700000000000003,
+                "speed_class": "Slow",
+                "ttfb_class": "Poor"
+            },
+            "indexability": {
+                "is_blocked": false,
+                "canonical": "https://1rishe.com/p/potato-seasoning/",
+                "issues": [],
+                "warnings": [
+                    "Canonical (https://1rishe.com/p/potato-seasoning/) differs from page URL."
+                ]
+            },
+            "keyword_check": {
+                "issues": [
+                    "KEYWORD: \"ریشه\" not in <h1>.",
+                    "KEYWORD: \"یک\" not in <h1>."
+                ],
+                "results": [
+                    {
+                        "keyword": "ریشه",
+                        "in_title": true,
+                        "in_h1": false,
+                        "in_desc": true,
+                        "in_first_p": false
+                    },
+                    {
+                        "keyword": "یک",
+                        "in_title": true,
+                        "in_h1": false,
+                        "in_desc": true,
+                        "in_first_p": false
+                    }
+                ]
+            },
+            "change_analysis": {
+                "changes": [],
+                "issues": [
+                    "CHANGE: HTML changed (no critical SEO tags affected)."
+                ],
+                "impact_level": "low"
+            },
+            "serp_risks": [],
+            "seo_score": 63,
+            "sparkline": [
+                12801,
+                20002,
+                16839
+            ],
+            "score_sparkline": [
+                65,
+                65,
+                63
+            ],
+            "errors_24h": 3,
+            "errors_7d": 3,
+            "last_checked": "2026-06-04 12:44:07"
+        }
+    },
+    "groups": [
+        {
+            "name": "qtest",
+            "urls": [
+                "f94f15790dd7312e8a20c909c41e6712"
+            ],
+            "avg_ms": 2203,
+            "avg_seo": 95,
+            "errors_24h": 27,
+            "errors_7d": 27,
+            "total": 1,
+            "ok": 0
+        },
+        {
+            "name": "inaser",
+            "urls": [
+                "a07e1ea67670264432d56ddb81eb267b"
+            ],
+            "avg_ms": 276,
+            "avg_seo": 100,
+            "errors_24h": 0,
+            "errors_7d": 0,
+            "total": 1,
+            "ok": 1
+        },
+        {
+            "name": "digikala",
+            "urls": [
+                "4f9096fc5548bb284772b238b2d5ca5a"
+            ],
+            "avg_ms": 96,
+            "avg_seo": 60,
+            "errors_24h": 23,
+            "errors_7d": 23,
+            "total": 1,
+            "ok": 0
+        },
+        {
+            "name": "1rishe",
+            "urls": [
+                "b44adc8e17063f3384f9bdeddeec2061",
+                "dea64ca4a3632b8fd1fa96efd2681b5b"
+            ],
+            "avg_ms": 18421,
+            "avg_seo": 74,
+            "errors_24h": 17,
+            "errors_7d": 17,
+            "total": 2,
+            "ok": 0
+        }
+    ]
+}
