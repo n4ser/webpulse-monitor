@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // ── Only hardcoded constant in the entire system ──────────────
-const DASHBOARD_TOKEN = 'your-secure-random-token';
+const DASHBOARD_TOKEN = '024sfsdfs';
 const LOG_DIR         = __DIR__ . '/logs';
 const SETTINGS_FILE   = LOG_DIR . '/settings.json';
 

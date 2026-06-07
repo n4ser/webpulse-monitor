@@ -27,7 +27,7 @@ ob_start();  // buffer all output so stray warnings don't corrupt JSON
 // ─────────────────────────────────────────────────────────────
 //  !! MUST MATCH DASHBOARD_TOKEN IN api.php !!
 // ─────────────────────────────────────────────────────────────
-define('DASHBOARD_TOKEN', 'your-secure-random-token');
+define('DASHBOARD_TOKEN', '024sfsdfs');
 
 define('IS_CLI', PHP_SAPI === 'cli');
 define('LOG_DIR', __DIR__ . '/logs');
