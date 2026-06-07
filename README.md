@@ -1,76 +1,70 @@
-# URL Monitor v4 — Deployment & Upgrade Guide
+# WebPulse Monitor v4 — Deployment & Setup Guide
 
-## What's New in v4
-
-| Feature | Details |
-|---|---|
-| **Manual Test button** | Triggers `monitor.php` via secure AJAX — no cron wait |
-| **Zero hardcoded config** | Every URL, group, threshold lives in `logs/settings.json` — editable via dashboard |
-| **URL Manager UI** | Add / edit / delete URLs and groups live from the browser |
-| **Settings panel** | Telegram credentials, thresholds, retries — all editable in-dashboard |
-| **RTL / Persian** | Full Vazirmatn font, RTL layout, ⇄ toggle button switches LTR/RTL |
-| **Run log viewer** | Manual test shows per-URL output in a log panel |
-| **Toast notifications** | Non-blocking feedback for all actions |
+A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting — all controlled from a real-time dashboard.
 
 ---
 
-## File Structure
+## 🚀 What's New in v4
+
+| Feature | Description |
+|---|---|
+| Manual Test Button | Run monitoring instantly via secure API (no cron wait) |
+| Fully Dynamic Config | All URLs, groups, and thresholds stored in `logs/settings.json` |
+| URL Manager UI | Add / edit / delete monitored URLs directly from dashboard |
+| Settings Panel | Manage Telegram alerts, thresholds, retries from UI |
+| SEO + Health Monitoring | Combines uptime, performance, and SEO signals |
+| Content Change Tracking | Detects and analyzes page structure changes |
+| Indexability Analysis | Detects noindex, canonical issues, and SERP risks |
+| RTL / Persian Support | Full RTL layout + Vazirmatn font + language toggle |
+| Live Run Logs | Per-URL execution logs in dashboard |
+| Toast Notifications | Instant UI feedback for all actions |
+
+---
+
+## 📁 File Structure
 
 ```
 your-monitor-dir/
-├── monitor.php        ← Cron script + HTTP-triggered endpoint
-├── api.php            ← Dashboard API (auth, data, settings, URL mgmt)
-├── dashboard.html     ← Web dashboard
-├── config.php         ← (optional) server-side overrides for secrets
+├── monitor.php              # Core monitoring engine (cron + API trigger)
+├── api.php                  # Dashboard API (auth, config, URL management)
+├── dashboard.html          # Web UI dashboard
+├── config.php              # Optional server-side secrets override
 └── logs/
-    ├── settings.json       ← all config (URL groups, thresholds, Telegram)
-    ├── latest.json         ← fast snapshot for dashboard
-    ├── history.json        ← per-URL historical entries
-    ├── master_log.json     ← full run history
-    ├── snapshots.json      ← content-change hashes
-    ├── seo_scores.json     ← daily SEO scores
-    ├── alert_state.json    ← Telegram cooldown state
-    └── .htaccess           ← REQUIRED — deny direct log access
+    ├── settings.json       # Main configuration (URLs, groups, thresholds)
+    ├── latest.json         # Latest snapshot for dashboard
+    ├── history.json        # Historical per-URL data
+    ├── master_log.json     # Full execution history
+    ├── snapshots.json      # Content hash tracking
+    ├── seo_scores.json     # Daily SEO scoring history
+    ├── alert_state.json    # Telegram cooldown tracking
+    └── .htaccess           # Protect logs from direct access
 ```
 
 ---
 
-## Step 1 — Only one thing to hardcode
+## ⚙️ Installation Steps
 
-Open **`api.php`** and set:
+### 1. Set Authentication Token
+
+Open `api.php` and set:
 
 ```php
-const DASHBOARD_TOKEN = 'my-long-random-secret-token';
+const DASHBOARD_TOKEN = 'your-secure-random-token';
 ```
-
-That's the **only hardcoded value** in the entire system.
 
 ---
 
-## Step 2 — Set your PHP version in cPanel
+### 2. Setup Cron Job (Production)
 
-Check your available PHP path:
+Run every 5 minutes:
+
 ```bash
-which php        # auto-detect
-/usr/local/bin/php8.3 -v   # test PHP 8.3 directly
+*/5 * * * * /usr/local/bin/php8.3 /home/youruser/monitor/monitor.php >> /home/youruser/monitor/logs/cron.log 2>&1
 ```
-
-Cron Job command:
-```
-*/5 * * * *  /usr/local/bin/php8.3 /home/youruser/monitor/monitor.php >> /home/youruser/monitor/logs/cron.log 2>&1
-```
-
-| PHP Version | Binary path |
-|---|---|
-| PHP 8.3 (recommended) | `/usr/local/bin/php8.3` |
-| PHP 8.2 | `/usr/local/bin/php8.2` |
-| PHP 8.1 | `/usr/local/bin/php8.1` |
-| PHP 8.0 | `/usr/local/bin/php8.0` |
-| Auto | `/usr/bin/php` |
 
 ---
 
-## Step 3 — Protect logs directory
+### 3. Protect Logs Directory
 
 Create `logs/.htaccess`:
 
@@ -79,78 +73,85 @@ Order deny,allow
 Deny from all
 ```
 
-Or via cPanel → File Manager → create the file.
+---
+
+### 4. Open Dashboard
+
+```
+https://yourdomain.com/monitor/dashboard.html
+```
+
+Login using your `DASHBOARD_TOKEN`.
 
 ---
 
-## Step 4 — Open Dashboard
+### 5. Add URLs
 
-1. Visit `https://yoursite.com/monitor/dashboard.html`
-2. Enter your `DASHBOARD_TOKEN`
-3. Token is saved in localStorage — no re-login needed
+Inside dashboard:
 
----
+- Add URL
+- Set label + group
+- Enable checks (SEO / content / vitals / keywords)
 
-## Step 5 — Add URLs (no PHP editing required)
-
-Click **"+ افزودن URL"** in the dashboard header:
-- Enter URL, label, group name
-- Toggle which checks to enable
-- Click save → immediately live
-
-All URL configs save to `logs/settings.json` and are picked up by the next cron run or Manual Test.
+Saved instantly to `logs/settings.json`.
 
 ---
 
-## Manual Test Security
+## 🧪 Manual Test
 
-The **"▶ تست دستی"** button:
-
-1. Calls `monitor.php` with your `DASHBOARD_TOKEN` in the `X-Monitor-Token` header
-2. `monitor.php` validates the token before running anything
-3. Returns the fresh `latest.json` payload directly — dashboard updates without page reload
-4. No unauthenticated access can trigger a run
+- Runs full monitoring instantly
+- Requires `X-Monitor-Token`
+- Returns latest JSON snapshot
+- No cron required
 
 ---
 
-## config.php (optional server-side overrides)
-
-For extra security, keep secrets out of `settings.json` (which is in the web root):
+## 🔐 config.php (Optional)
 
 ```php
 <?php
-// config.php — never commit this to version control
 return [
-    'telegram_bot_token' => 'your-actual-bot-token',
+    'telegram_bot_token' => 'your-bot-token',
     'telegram_chat_id'   => '-100xxxxxxxxxx',
-    'dashboard_token'    => 'your-actual-dashboard-token',  // overrides api.php constant
+    'dashboard_token'    => 'override-token',
 ];
 ```
 
-`config.php` overrides `settings.json` which overrides built-in defaults.
+Priority:
+```
+config.php > settings.json > defaults
+```
 
 ---
 
-## Persian / RTL Support
+## 🌍 RTL / Persian Support
 
-- Dashboard loads in **RTL mode** by default (`<html dir="rtl">`)
-- Uses **Vazirmatn** font — best Persian web font, loaded from Google Fonts
-- The **⇄** button in the header toggles between RTL (Persian) and LTR (English)
-- All JSON logs use `JSON_UNESCAPED_UNICODE` — Persian text stores and displays without corruption
-- Group names, labels, and keywords can be in Persian with full UTF-8 support
-
----
-
-## Upgrading from v3
-
-1. Replace all three files (`monitor.php`, `api.php`, `dashboard.html`)
-2. Existing `logs/` data is fully compatible — no migration needed
-3. Your existing URL groups in the old `$URL_GROUPS` PHP array need to be re-entered via the dashboard UI (one-time), or copy-pasted into `logs/settings.json` manually under the `url_groups` key
-4. Change `DASHBOARD_TOKEN` in the new `api.php`
+- RTL default layout
+- Vazirmatn font
+- RTL ↔ LTR toggle button
+- Full UTF-8 support
+- No JSON encoding issues
 
 ---
 
-## settings.json structure (for manual editing)
+## 🔄 Upgrade from v3
+
+1. Replace:
+   - monitor.php
+   - api.php
+   - dashboard.html
+
+2. Keep `/logs` folder
+
+3. Re-import URLs (or copy settings.json)
+
+4. Update DASHBOARD_TOKEN
+
+No migration needed.
+
+---
+
+## ⚙️ settings.json Example
 
 ```json
 {
@@ -165,10 +166,10 @@ return [
   "seo_score_drop_pct": 10,
   "max_history_entries": 2000,
   "url_groups": {
-    "سایت اصلی": [
+    "Main Site": [
       {
         "url": "https://example.com",
-        "label": "صفحه اصلی",
+        "label": "Homepage",
         "expected_status": 200,
         "check_seo": true,
         "check_content": true,
@@ -178,9 +179,145 @@ return [
         "check_serp_risk": true,
         "check_change_impact": true,
         "keyword_present": "",
-        "target_keywords": ["سئو", "بهینه‌سازی"]
+        "target_keywords": ["seo", "optimization"]
       }
     ]
   }
 }
 ```
+
+---
+
+## 🧠 Overview
+
+This system provides:
+
+- Uptime monitoring
+- Performance tracking
+- SEO auditing
+- Content change detection
+- SERP risk analysis
+- Telegram alerts
+- Historical analytics
+
+---
+
+## ⚠️ Notes
+
+- Do not expose `/logs` publicly
+- Use HTTPS in production
+- Rotate DASHBOARD_TOKEN regularly
+- Keep cron interval ≥ 5 minutes
+
+---
+
+## 🖥️ Demo
+
+### Dashboard Overview
+![Dashboard](docs/screenshots/dashboard.png)
+
+### SEO & Monitoring View
+![SEO View](docs/screenshots/seo.png)
+
+### Alert Example (Telegram)
+![Alert](docs/screenshots/alert.png)
+
+> Screenshots show real-time monitoring, SEO scoring, and alert system in action.
+
+---
+
+## ⚡ Quick Start (2 Minutes)
+
+```bash
+# 1. Clone project
+git clone https://github.com/yourname/webpulse-monitor.git
+cd webpulse-monitor
+
+# 2. Set permissions
+chmod -R 755 logs
+
+# 3. Open dashboard
+http://yourdomain.com/monitor/dashboard.html
+```
+
+Then:
+- Enter your `DASHBOARD_TOKEN`
+- Add your first URL
+- Click “Manual Test” to verify system
+
+Done.
+
+---
+
+## 📦 Requirements
+
+### PHP Version
+- PHP 8.0+ required
+- Recommended: PHP 8.3
+
+Check version:
+```bash
+php -v
+```
+
+---
+
+### Required PHP Extensions
+- cURL (`php-curl`)
+- DOM (`php-xml`)
+- JSON (enabled by default)
+
+Check cURL:
+```bash
+php -m | grep curl
+```
+
+---
+
+### Server Requirements
+- Writable `logs/` directory
+- Cron support (for production mode)
+- HTTPS recommended (production)
+
+Fix permissions:
+```bash
+chmod -R 755 logs
+```
+
+---
+
+## ⚠️ Important Notes
+
+- Do NOT expose `/logs` directory publicly
+- Keep `config.php` outside version control
+- Rotate `DASHBOARD_TOKEN` periodically
+- Use HTTPS in production environments
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+```
+MIT License
+
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy...
+(standard MIT license text applies)
+```
+
+---
+
+## 🧠 Summary
+
+This system provides:
+
+- Uptime monitoring
+- SEO auditing
+- Content change detection
+- Performance tracking
+- SERP risk analysis
+- Telegram alert automation
+- Real-time dashboard analytics

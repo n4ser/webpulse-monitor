@@ -1,0 +1,17 @@
+# Runtime logs (NEVER commit)
+logs/
+
+# Sensitive config
+config.php
+
+# Server logs
+error_log
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
