@@ -5,7 +5,7 @@ A lightweight web monitoring system with uptime tracking, SEO auditing, content 
 ---
 
 ## 🚀 What's New in v4
-
+ 
 | Feature | Description |
 |---|---|
 | Manual Test Button | Run monitoring instantly via secure API (no cron wait) |
