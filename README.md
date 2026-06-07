@@ -1,4 +1,4 @@
-# WebPulse Monitor v4 — Deployment & Setup Guide
+# Seo Uptime Monitorr v4 — Deployment & Setup Guide
 
 A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting — all controlled from a real-time dashboard.
 
