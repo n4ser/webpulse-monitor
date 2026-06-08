@@ -3,6 +3,7 @@ logs/
 
 # Sensitive config
 config.php
+.gitignore
 
 # Server logs
 error_log
