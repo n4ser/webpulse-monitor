@@ -1,5 +1,6 @@
 # Runtime logs (NEVER commit)
-logs/
+logs/*
+!logs/.htaccess
 
 # Sensitive config
 config.php
@@ -18,4 +19,4 @@ Thumbs.db
 .idea/
 demo/
 docs/
-README.md
+

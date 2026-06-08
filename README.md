@@ -1,10 +1,10 @@
-# Seo Uptime Monitorr v4 -Deployment & Setup Guide
+# Seo Uptime Monitorr v1.4 -Deployment & Setup Guide
 
 A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting -all controlled from a real-time dashboard. 
 
 ---
 
-## 🚀 What's New in v4
+## 🚀 What's New in v1.4
  
 | Feature | Description |
 |---|---|
@@ -328,7 +328,7 @@ This system provides:
 - Real-time dashboard analytics
 
 
-# مانیتورینگ SEO و آپ‌تایم v4 -راهنمای نصب و راه‌اندازی
+# مانیتورینگ SEO و آپ‌تایم v1.4 -راهنمای نصب و راه‌اندازی
 
 سیستم سبک مانیتورینگ وب با قابلیت بررسی آپ‌تایم، تحلیل SEO، تشخیص تغییرات محتوا و ارسال هشدارها، همه از طریق یک داشبورد بلادرنگ قابل کنترل است.
 
