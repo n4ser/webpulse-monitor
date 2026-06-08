@@ -16,7 +16,7 @@ ob_start();  // buffer all output so stray warnings don't corrupt JSON
 //    /usr/local/bin/php8.3 /path/to/monitor.php >> /path/to/logs/cron.log 2>&1
 //
 //  Web trigger (from dashboard Manual Test button):
-//    GET https://yoursite.com/monitor/monitor.php?token=YOUR_TOKEN
+//    GET https://inaser.com/monitor/monitor.php?token=YOUR_TOKEN
 //    Header: X-Monitor-Token: YOUR_TOKEN
 //
 //  PHP version:
@@ -27,7 +27,7 @@ ob_start();  // buffer all output so stray warnings don't corrupt JSON
 // ─────────────────────────────────────────────────────────────
 //  !! MUST MATCH DASHBOARD_TOKEN IN api.php !!
 // ─────────────────────────────────────────────────────────────
-define('DASHBOARD_TOKEN', '024sfsdfs');
+define('DASHBOARD_TOKEN', '12dfghf3ad56');
 
 define('IS_CLI', PHP_SAPI === 'cli');
 define('LOG_DIR', __DIR__ . '/logs');
@@ -162,8 +162,8 @@ function loadConfig(): array
 {
     $defaults = [
         'dashboard_token'    => 'CHANGE_THIS_SECRET_TOKEN',
-        'telegram_bot_token' => 'YOUR_BOT_TOKEN_HERE',
-        'telegram_chat_id'   => 'YOUR_CHAT_ID_HERE',
+        'bale_bot_token' => 'YOUR_BOT_TOKEN_HERE',
+        'bale_chat_id'   => 'YOUR_CHAT_ID_HERE',
         'slow_threshold_ms'  => 3000,
         'ttfb_slow_ms'       => 600,
         'max_retries'        => 3,
@@ -356,9 +356,9 @@ function monitorUrl(
         }
     }
 
-    // ── Telegram ─────────────────────────────────────────────
+    // ── bale ─────────────────────────────────────────────
     if (!empty($issues)) {
-        maybeSendTelegram($label, $url, $group, $issues, $responseMs, $seoScore, $alertState, $CFG);
+        maybeSendbale($label, $url, $group, $issues, $responseMs, $seoScore, $alertState, $CFG);
     } else {
         unset($alertState[md5($url)]);
     }
@@ -594,10 +594,10 @@ function calculateSeoScore(array $issues, array $vitals, array $indexability, in
     return max(0, min(100, $score));
 }
 
-function maybeSendTelegram(string $label, string $url, string $group, array $issues, int $ms, int $seoScore, array &$alertState, array $CFG): void
+function maybeSendbale(string $label, string $url, string $group, array $issues, int $ms, int $seoScore, array &$alertState, array $CFG): void
 {
-    $token  = $CFG['telegram_bot_token'] ?? '';
-    $chatId = $CFG['telegram_chat_id']   ?? '';
+    $token  = $CFG['bale_bot_token'] ?? '';
+    $chatId = $CFG['bale_chat_id']   ?? '';
     if ($token === '' || $token === 'YOUR_BOT_TOKEN_HERE') return;
 
     $key = md5($url); $now = time();
@@ -617,7 +617,7 @@ function maybeSendTelegram(string $label, string $url, string $group, array $iss
          . "⏱ {$ms}ms  {$scoreEmoji} SEO: {$seoScore}/100\n"
          . "🕐 " . date('Y-m-d H:i:s') . "\n\n*Issues:*\n{$lines}";
 
-    $ch = curl_init("https://api.telegram.org/bot{$token}/sendMessage");
+    $ch = curl_init("https://tapi.bale.ai/bot{$token}/sendMessage");
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_POSTFIELDS => ['chat_id' => $chatId, 'text' => $msg, 'parse_mode' => 'Markdown'], CURLOPT_TIMEOUT => 10]);
     curl_exec($ch); curl_close($ch);
 }

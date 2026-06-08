@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // ── Only hardcoded constant in the entire system ──────────────
-const DASHBOARD_TOKEN = '024sfsdfs';
+const DASHBOARD_TOKEN = '12dfghf3ad56';
 const LOG_DIR         = __DIR__ . '/logs';
 const SETTINGS_FILE   = LOG_DIR . '/settings.json';
 
@@ -185,7 +185,7 @@ function handleSettings(string $method): void
         if (!is_array($body)) { http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); return; }
 
         $current  = loadJson(SETTINGS_FILE, defaultSettings());
-        $allowed  = ['telegram_bot_token', 'telegram_chat_id', 'slow_threshold_ms', 'ttfb_slow_ms',
+        $allowed  = ['bale_bot_token', 'bale_chat_id', 'slow_threshold_ms', 'ttfb_slow_ms',
                      'max_retries', 'retry_delay_sec', 'request_timeout', 'alert_cooldown_min',
                      'seo_score_drop_pct', 'max_history_entries'];
 
@@ -340,8 +340,8 @@ function sanitizeUrlEntry(array $raw): array
 function defaultSettings(): array
 {
     return [
-        'telegram_bot_token'  => '',
-        'telegram_chat_id'    => '',
+        'bale_bot_token'  => '',
+        'bale_chat_id'    => '',
         'slow_threshold_ms'   => 3000,
         'ttfb_slow_ms'        => 600,
         'max_retries'         => 3,

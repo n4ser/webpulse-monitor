@@ -1042,14 +1042,14 @@ function renderSettingsForm(cfg) {
     <button class="panel-close" onclick="closeSidePanel()">✕</button>
   </div>
   <div class="side-panel-body">
-    <div class="section-divider">Telegram</div>
+    <div class="section-divider">bale</div>
     <div class="form-group">
       <label class="form-label">Bot Token</label>
-      <input class="form-input" id="s-tg-token" value="${esc(cfg.telegram_bot_token||'')}">
+      <input class="form-input" id="s-tg-token" value="${esc(cfg.bale_bot_token||'')}">
     </div>
     <div class="form-group">
       <label class="form-label">Chat ID</label>
-      <input class="form-input" id="s-tg-chat" value="${esc(cfg.telegram_chat_id||'')}">
+      <input class="form-input" id="s-tg-chat" value="${esc(cfg.bale_chat_id||'')}">
     </div>
 
     <div class="section-divider">عملکرد</div>
@@ -1100,8 +1100,8 @@ function renderSettingsForm(cfg) {
 
 async function saveSettings() {
   const payload = {
-    telegram_bot_token:  document.getElementById('s-tg-token').value.trim(),
-    telegram_chat_id:    document.getElementById('s-tg-chat').value.trim(),
+    bale_bot_token:  document.getElementById('s-tg-token').value.trim(),
+    bale_chat_id:    document.getElementById('s-tg-chat').value.trim(),
     slow_threshold_ms:   parseInt(document.getElementById('s-slow').value),
     ttfb_slow_ms:        parseInt(document.getElementById('s-ttfb').value),
     max_retries:         parseInt(document.getElementById('s-retries').value),
