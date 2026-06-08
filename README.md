@@ -214,15 +214,15 @@ This system provides:
 ## 🖥️ Demo
 
 ### Dashboard Overview
-![Dashboard](docs/screenshots/dashboard.png)
+![Dashboard](https://inaser.ir/monitor/docs/screenshots/dashboard.png)
 
 ### SEO & Monitoring View
-![SEO View](docs/screenshots/seo.png)
+![SEO View](https://inaser.ir/monitor/docs/screenshots/seo.jpg)
 
 ### Alert Example (Bale)
-![Alert](docs/screenshots/alert.png)
+![Alert](https://inaser.ir/monitor/docs/screenshots/alert.jpg)
 
-> Screenshots show real-time monitoring, SEO scoring, and alert system in action.
+> Screenshots show real-time monitoring, SEO scoring, and alert system in action.png
 
 ---
 
@@ -551,11 +551,11 @@ config.php > settings.json > defaults
 
 ### نمای SEO و مانیتورینگ
 
-![SEO View](https://inaser.ir/monitor/docs/screenshots/seo.png)
+![SEO View](https://inaser.ir/monitor/docs/screenshots/seo.jpg)
 
 ### نمونه هشدار (Bale)
 
-![Alert](https://inaser.ir/monitor/docs/screenshots/alert.png)
+![Alert](https://inaser.ir/monitor/docs/screenshots/alert.jpg)
 
 ---
 
