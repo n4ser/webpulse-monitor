@@ -547,15 +547,15 @@ config.php > settings.json > defaults
 
 ### نمای داشبورد
 
-![Dashboard](https://inaser.ir/monitor/screenshots/dashboard.png)
+![Dashboard](https://inaser.ir/monitor/docs/screenshots/dashboard.png)
 
 ### نمای SEO و مانیتورینگ
 
-![SEO View](https://inaser.ir/monitor/screenshots/seo.png)
+![SEO View](https://inaser.ir/monitor/docs/screenshots/seo.png)
 
 ### نمونه هشدار (Bale)
 
-![Alert](https://inaser.ir/monitor/screenshots/alert.png)
+![Alert](https://inaser.ir/monitor/docs/screenshots/alert.png)
 
 ---
 
