@@ -1,6 +1,6 @@
-# Seo Uptime Monitorr v4 — Deployment & Setup Guide
+# Seo Uptime Monitorr v4 -Deployment & Setup Guide
 
-A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting — all controlled from a real-time dashboard. 
+A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting -all controlled from a real-time dashboard. 
 
 ---
 
@@ -327,8 +327,8 @@ This system provides:
 - Bale alert automation
 - Real-time dashboard analytics
 
-```md
-# مانیتورینگ SEO و آپ‌تایم v4 — راهنمای نصب و راه‌اندازی
+
+# مانیتورینگ SEO و آپ‌تایم v4 -راهنمای نصب و راه‌اندازی
 
 سیستم سبک مانیتورینگ وب با قابلیت بررسی آپ‌تایم، تحلیل SEO، تشخیص تغییرات محتوا و ارسال هشدارها، همه از طریق یک داشبورد بلادرنگ قابل کنترل است.
 
@@ -654,5 +654,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 * هشدار خودکار Bale
 * داشبورد بلادرنگ
 
-```
-```
+
