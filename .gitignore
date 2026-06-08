@@ -1,6 +1,13 @@
 # Runtime logs (NEVER commit)
-logs/*
-!logs/.htaccess
+
+logs/alert_state.json 
+logs/history.json 
+logs/latest.json 
+logs/master_log.json 
+logs/seo_scores.json 
+logs/settings.json 
+logs/snapshots.json
+
 
 # Sensitive config
 config.php
