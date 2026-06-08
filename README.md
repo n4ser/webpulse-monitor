@@ -1,4 +1,4 @@
-# Seo Uptime Monitorr v1.4 -Deployment & Setup Guide
+# Seo Uptime Monitor v1.4 -Deployment & Setup Guide
 
 A lightweight web monitoring system with uptime tracking, SEO auditing, content change detection, and alerting -all controlled from a real-time dashboard. 
 
