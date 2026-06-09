@@ -230,8 +230,8 @@ This system provides:
 
 ```bash
 # 1. Clone project
-git clone https://github.com/n4ser/webpulse-monitor.git
-cd webpulse-monitor
+git clone https://github.com/n4ser/seo-uptime-monitor.git
+cd seo-uptime-monitor
 
 # 2. Set permissions
 chmod -R 755 logs
@@ -563,8 +563,8 @@ config.php > settings.json > defaults
 
 ```bash
 # کلون پروژه
-git clone https://github.com/n4ser/webpulse-monitor.git
-cd webpulse-monitor
+git clone https://github.com/n4ser/seo-uptime-monitor.git
+cd seo-uptime-monitor
 
 # تنظیم دسترسی‌ها
 chmod -R 755 logs
